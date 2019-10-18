@@ -8,21 +8,23 @@ function ask(questionText) {
 }
 
 // remember the StateMachine lecture
-// https://bootcamp.burlingtoncodeacademy.com/lessons/cs/state-machines
-let states = {
-  'roomOne': { canChangeTo: [ 'roomTwo' ] },
-  'roomTwo': { canChangeTo: [ 'roomThree' ] },
-  'roomThree': { canChangeTo: [ 'roomOne' ] }
+// https://bootcamp.burlingtoncodeacademy.com/lessons/javascript/state-machines
+let rooms = {
+  'outside': { canChangeTo: [foyer, mrMikes, muddyWaters] },
+  'foyer': { canChangeTo: [classroom, outside] },
+  'classroom': { canChangeTo: [foyer] },
+  'muddyWaters': { canChangeTo: [outside] },
+  'mrMikes': {canChangeTo: [outside]}
 };
 
-let currentState = "green";
+let currentRoom = 'outside';
 
-function enterState(newState) {
-  let validTransitions = states[currentState].canChangeTo;
-  if (validTransitions.includes(newState)) {
-    currentState = newState;
+function enterRoom(newRoom) {
+  let validTransitions = rooms[currentRoom].canChangeTo;
+  if (validTransitions.includes(newRoom)) {
+    currentRoom = newRoom;
   } else {
-    throw 'Invalid state transition attempted - from ' + currentState + ' to ' + newState;
+    throw 'Invalid state transition attempted - from ' + currentRoom + ' to ' + newRoom;
   }
 }
 
@@ -35,5 +37,14 @@ There is a door here. A keypad sits on the handle.
 On the door is a handwritten sign.`;
   let answer = await ask(welcomeMessage);
   console.log('Now write your code to make this work!');
+
+  
   process.exit();
+}
+
+//write global objects for each room
+
+let outside = {
+  name: 'Main Street'
+  
 }
