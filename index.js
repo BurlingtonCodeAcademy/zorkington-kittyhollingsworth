@@ -1,6 +1,41 @@
 const readline = require('readline');
 const readlineInterface = readline.createInterface(process.stdin, process.stdout);
 
+
+
+function outsideRoom (answer) {
+if (answer === 'read sign'){
+  return 'The sign says "Welcome to Burlington Code Academy! Come on up to the third floor. If the door is locked, use the code 12345."'
+}else if (answer === 'gargle'){
+  return "Sorry, I don't know how to gargle."
+}else if(answer === 'take sign'){
+  return 'That would be selfish. How will other students find their way?'
+}else if(answer === 'enter code 12345' || answer === 'key in 12345'){
+  console.log('Success! The door opens. You enter the foyer and the door shuts behind you.')
+  return enterRoom(foyer)
+}else if(answer === 'enter code 54321'){
+  return 'Bzzzzt! The door is still locked.'
+}else {
+  console.log('The door is locked. There is a keypad on the door handle.')
+}
+}
+
+function foyer (answer) {
+  console.log(answer + 'in the foyer')
+}
+
+function mrMikes (answer) {
+  console.log(answer + 'I am at mr.Mikes ')
+}
+
+function muddyWaters (answer) {
+  console.log(answer + 'I am at muddy waters')
+}
+
+function classroom (answer) {
+  console.log(answer + 'I am learning!')
+}
+
 function ask(questionText) {
   return new Promise((resolve, reject) => {
     readlineInterface.question(questionText, resolve);
@@ -8,21 +43,23 @@ function ask(questionText) {
 }
 
 // remember the StateMachine lecture
-// https://bootcamp.burlingtoncodeacademy.com/lessons/cs/state-machines
-let states = {
-  'roomOne': { canChangeTo: [ 'roomTwo' ] },
-  'roomTwo': { canChangeTo: [ 'roomThree' ] },
-  'roomThree': { canChangeTo: [ 'roomOne' ] }
+// https://bootcamp.burlingtoncodeacademy.com/lessons/javascript/state-machines
+let rooms = {
+  'outside': { canChangeTo: [foyer, mrMikes, muddyWaters] },
+  'foyer': { canChangeTo: [classroom, outside] },
+  'classroom': { canChangeTo: [foyer] },
+  'muddyWaters': { canChangeTo: [outside] },
+  'mrMikes': {canChangeTo: [outside]}
 };
 
-let currentState = "green";
+let currentRoom = 'outside';
 
-function enterState(newState) {
-  let validTransitions = states[currentState].canChangeTo;
-  if (validTransitions.includes(newState)) {
-    currentState = newState;
+function enterRoom(newRoom) {
+  let validTransitions = rooms[currentRoom].canChangeTo;
+  if (validTransitions.includes(newRoom)) {
+    currentRoom = newRoom;
   } else {
-    throw 'Invalid state transition attempted - from ' + currentState + ' to ' + newState;
+    throw 'Invalid state transition attempted - from ' + currentRoom + ' to ' + newRoom;
   }
 }
 
@@ -33,7 +70,16 @@ async function start() {
 You are standing on Main Street between Church and South Winooski.
 There is a door here. A keypad sits on the handle.
 On the door is a handwritten sign.`;
+
+  const foyerMessage = "You are in a foyer. Or maybe it's an antechamber. Or a vestibule. Or an entryway. Or an atrium. Or a narthex. But let's forget all that fancy flatlander vocabulary, and just call it a foyer. In Vermont, this is pronounced 'FO-ee-yurr'. A copy of Seven Days lies in a corner."
   let answer = await ask(welcomeMessage);
-  console.log('Now write your code to make this work!');
+
+if (currentRoom === 'outside'){
+  outsideRoom(answer);
+  return
+}else if (currentRoom === 'foyer')
+  answer = await ask(foyerMessage) 
+ foyer(answer)
+
   process.exit();
 }
